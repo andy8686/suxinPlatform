@@ -17,7 +17,7 @@ app.register_blueprint(pf_blue)
 #
 @app.route('/')
 def index():
-    print('112221')
+    print('1122221')
     return render_template("index.html")
 # #
 @app.errorhandler(404)
