@@ -15,10 +15,10 @@ app.register_blueprint(pf_blue)
 #     # return jsonify(out_param)
 #     pass
 #
-@app.route('/')
-def index():
-    return render_template("index.html")
-#
+# @app.route('/')
+# def index():
+#     return render_template("index.html")
+# #
 @app.errorhandler(404)
 def err_404_handler(err):
     #err 错误的信息
