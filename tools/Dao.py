@@ -1,10 +1,63 @@
 import configparser,uuid,json,tools.GlobalTools as gt
 from sqlalchemy.orm import sessionmaker,scoped_session
 from sqlalchemy import create_engine
+import pymysql
 from datetime import date
 import dataPlatform.sqlMapperPlatform as sqlMapper
 
-class DaoPool(object):
+class MysqlDaoPool(object):
+    __isinstance = False  # 设置一个私有变量，默认没有被实例化
+
+    def __new__(cls, *args, **kwargs):
+        if not cls.__isinstance:  # 如果被实例化了
+            cls.__isinstance = object.__new__(cls)  # 否则实例化
+        return cls.__isinstance  # 返回实例化的对象
+
+    def __init__(self, host=None, port=None, sid=None, user=None, password=None):
+        '''
+        初始化数据库的链接类 , 如果为空 , 则取config.ini 中默认参数
+        :param host:
+        :param port:
+        :param sid:
+        :param user:
+        :param password:
+        '''
+        self.db_log_print = False
+        if host and port and sid and user and password:
+            pass
+        else:
+            conf = configparser.ConfigParser()
+            conf.read('config.ini', encoding='utf-8')
+            if not host:
+                host = conf.get('mysql', 'host')
+            if not port:
+                port = conf.get('mysql', 'port')
+            if not sid:
+                sid = conf.get('mysql', 'sid')
+            if not user:
+                user = conf.get('mysql', 'user')
+            if not password:
+                password = conf.get('mysql', 'password')
+            if conf.get('sys', 'db_log_print') == '1':
+                self.db_log_print = True
+        engine = create_engine(
+            "mysql+pymysql://{user}:{password}@{host}:{port}/{sid}?charset=utf8".format(user=user, password=password, host=host,port=port, sid=sid),
+            max_overflow=30,  # 超过连接池大小外最多创建的连接
+            pool_size=5,  # 连接池大小
+            pool_timeout=10,  # 池中没有线程最多等待的时间，否则报错
+            pool_recycle=-1,  # 多少秒之后对线程池中的线程进行一次连接的回收（重置）
+            echo=self.db_log_print
+        )
+        self.SessionFactory = sessionmaker(bind=engine)
+
+        pass
+    def get_sesson(self):
+        return scoped_session(self.SessionFactory)
+
+
+
+
+class OracleDaoPool(object):
     __isinstance = False  # 设置一个私有变量，默认没有被实例化
 
     def __new__(cls, *args, **kwargs):
@@ -56,18 +109,19 @@ class DaoPool(object):
 
 class Dao(object):
     '''
-    封装oracle数据库操作类
+    封装数据库操作类
     '''
 
     def __init__(self):
-        self.pool = DaoPool()
+        # self.pool = OracleDaoPool()
+        self.pool = MysqlDaoPool()
         self.sesson = self.pool.get_sesson()
         self.result = None
         pass
 
     def __del__(self):
-        self.colse_db(self)
-        pass
+        if self:
+            self.colse_db()
 
     def execute(self, sql, param=None):
         '''
@@ -168,6 +222,7 @@ class BaseService(object):
         if not self.param['service_id']:
             self.param['error'] = '服务ID不能为空'
             return self.param
+
         sql = sqlMapper.get_service_by_id
         a = self.select(sql=sql, param=self.param)
         if not len(a) == 1:
@@ -243,6 +298,9 @@ class BaseService(object):
             a[i] = list(a[i])
             i += 1
         return a
+
+
+
     def insert(self, sql, param=None):
         return self.dao.insert(sql=sql,param=param)
     def update(self, sql, param=None):
@@ -253,3 +311,4 @@ class BaseService(object):
         return self.dao.commit_or_rollback(YN=YN)
     def colse_db(self):
         return self.dao.colse_db()
+

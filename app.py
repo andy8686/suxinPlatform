@@ -1,49 +1,40 @@
 from flask import Flask, request, render_template, jsonify
 from dataPlatform.dataPlatFormRoute import pf_blue
+from tools.FlasggerDoc import FlasggerDoc
 from flasgger import Swagger
 app = Flask(__name__)
-
+app.config['JSON_AS_ASCII'] = False
 app.register_blueprint(pf_blue)
-#
-# '''对外提供微服务执行的代码'''
-# @app.route('/<service_id>.do' ,methods=['GET', 'POST'])
-# def to_service(service_id):
-#     # 平台系统的调用platform
-#     # request.service_id = service_id
-#     # out_param = pf.invoke(request)
-#
-#     # return jsonify(out_param)
-#     pass
-#
+
+
 @app.route('/')
 def index():
     return render_template("index.html")
-# #
-@app.errorhandler(404)
-def err_404_handler(err):
-    #err 错误的信息
-    # return render_template("index.html")
-    pass
 
 @app.before_request
 def before_request_handle():
-    requesta = request
-    print(requesta.url)
     print('每次请求之前都执行')
+    return
 
 @app.after_request
-def after_request_handle(response):
-    print('每次请求之后执行')
-    # return response
+def allow_origin(response):
+    response.headers['Access-Control-Allow-Origin'] = 'http://example.com'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
 
-@app.teardown_request
-def teardown_request_handle(err):
-    print('每次请求之后执行,错误是',err)
+    return response
 
+flasggerDoc = FlasggerDoc()
+flasggerDoc.init_flasgger_json_doc()
+swag = Swagger(app,template_file="tools\\flasggerDoc.json")
+# swagger_config = swag.DEFAULT_CONFIG
 
-swag = Swagger(app)
 
 if __name__ == "__main__":
     # 将host设置为0.0.0.0，则外网用户也可以访问到这个服务
-    app.run(host='192.168.98.15', port=80, debug=True)
-    # app.run(debug=True)
+    # app.run(host='192.168.98.15', port=80, debug=True)
+    app.run(debug=True)
+
+
+
+
+

@@ -1,12 +1,15 @@
 from flask import jsonify,request,Blueprint
-from flasgger import swag_from
 from dataPlatform import SystemUser,ServiceManagement,SystemModule,SystemMuen
-from dataPlatform import dataPlatformDoc as df
+
 pf_blue = Blueprint("pf_blue",__name__)
+
+@pf_blue.route('/pfus0000',methods=['GET'])
+def pfus0000():
+
+    return jsonify({'name':'zhangsan',"age":15})
 
 #做为服务的路由功能
 @pf_blue.route('/pfus0001',methods=['GET'])
-@swag_from(df.get_flawgger_doc('pfus0001'),methods=['GET'])
 def pfus0001():
     request.service_id = 'pfus0001'
     servaice_class = SystemUser(request)
@@ -15,7 +18,7 @@ def pfus0001():
     return jsonify(param)
 
 @pf_blue.route('/pfus0002',methods=['GET'])
-@swag_from(df.get_flawgger_doc('pfus0002'),methods=['GET'])
+# @swag_from(df.get_flawgger_doc('pfus0002'),methods=['GET'])
 def pfus0002():
     request.service_id = 'pfus0002'
     servaice_class = SystemUser(request)
@@ -23,7 +26,7 @@ def pfus0002():
     param = servaice_class.return_param()
     return jsonify(param)
 
-@pf_blue.route('/sm/0001',methods=['GET'])
+@pf_blue.route('/pfsm0001',methods=['GET'])
 def pfsm0001():
 
     request.service_id = 'pfsm0001'

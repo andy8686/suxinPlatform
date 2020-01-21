@@ -1,6 +1,5 @@
 from tools.Dao import BaseService
 import dataPlatform.sqlMapperPlatform as sqlMapper
-import json
 
 class ServiceManagement(BaseService):
     def __init__(self,  request):
