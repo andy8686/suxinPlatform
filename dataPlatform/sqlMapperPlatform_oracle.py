@@ -1,26 +1,23 @@
-# ================mysql 版SQL语法
+
 # ============================系统用户模块
 '''验证用户名和密码'''
 check_sys_users_password = '''select a.id from sys_users a where a.phone = :phone and a.password = :password'''
-
 '''插入用户登录信息'''
-insert_user_login_log = '''insert into login_log(id,user_id,last_date)values(:login_id,:user_id,now())'''
-
+insert_user_login_log = '''insert into login_log(id,user_id,last_date)values(:login_id,:user_id,sysdate)'''
 '''检查用户手机号是否已经存在 , 手机号作为登录使用'''
 check_sys_user_phone_exist = '''select count(1) from sys_users a where a.phone = :phone'''
-
 '''新增系统用户'''
 insert_sys_user = '''insert into sys_users(id, name, birthday, sex, phone, email, account, password ) 
-              values( :user_id, :name, str_to_date(:birthday,'%Y%m%d'), :sex, :phone, :email, :account, :password )'''
-
+              values( :user_id, :name, to_date(:birthday,'yyyy-mm-dd'), :sex, :phone, :email, :account, :password )'''
 '''验证用户login_id是否还在有效期'''
-check_loginid_period_time = '''select count(1) from login_log a where a.id = :login_id and a.create_date > now() - 0.5 and a.last_date > now() - 0.02'''
+check_loginid_period_time = '''select count(1) from login_log a where a.id = :login_id and a.create_date > sysdate - 0.5 and a.last_date > sysdate - 0.02'''
 
 # ============================平台的服务模块
 '''通过服务ID获取服务系统'''
 get_service_by_id = '''select a.name,a.in_param,a.out_param,a.note from SERVICE_TAB a where a.id = :service_id'''
+
 '''查询服务 , 可以按照系统 或模块 或 服务ID查询 , 也可以获取全部, 位置不能变了'''
-get_service_by_id_or_module_sys = '''select a.id,a.name,a.in_param,a.out_param,a.note from SERVICE_TAB a 
+get_service_by_id_or_module_sys = '''SELECT a.id,a.name,a.in_param,a.out_param,a.note FROM SERVICE_TAB a 
           where (a.sys_id = :id or a.module_id = :id or a.service_id = :id or a.id = :id or 'all'=:id)'''
 
 

@@ -2,7 +2,6 @@ from tools.Dao import Dao
 import dataPlatform.sqlMapperPlatform as sqlMapper
 import json
 
-
 class FlasggerDoc(object):
     flasggerDocJson = {
         "tags": [],

@@ -1,52 +1,65 @@
 from tools.Dao import BaseService
 import dataPlatform.sqlMapperPlatform as sqlMapper
+from flask import jsonify, request, Blueprint
 
-class SystemUser(BaseService):
-    def __init__(self,request):
-        # 调用父类中的初始化
-        self.init_param(request)
-
-    def pfus0001(self):
-        # 获取初始化的参数
-        param = self.param
-        if not param['error'] == '0':
-            return param
-
-        sql = sqlMapper.check_sys_users_password
-        temp = self.select(sql=sql, param=param)
-
-        if not len(temp) == 1:
-            param['error'] = '用户名或密码错误!!!'
-            return param
-        param['user_id'] = temp[0][0]
-        '''记录到登录日志中去'''
-        param['login_id'] = self.get_uuid()
-
-        sql = sqlMapper.insert_user_login_log
-        a = self.insert(sql=sql, param=param)
-
-        self.commit_or_rollback()
+pfus = Blueprint("pfus", __name__)
 
 
-    def pfus0002(self):
-        '''新增用户'''
-        # 获取初始化的参数
-        param = self.param
-        if not param['error'] == '0':
-            return param
-        '''用户登录'''
+# 做为服务的路由功能
+@pfus.route('/pfus0001', methods=['GET'])
+def pfus0001():
+    '''用户登录'''
+    request.service_id = 'pfus0001'
+    dao_service = BaseService(request)
 
-        '''验证用户名和密码'''
-        sql = sqlMapper.check_sys_user_phone_exist
-        temp = self.select(sql=sql, param=param)
-        if temp[0][0] == 1:
-            param['error'] = '手机号码不能重复!!'
-            return param
+    # 获取初始化的参数
+    # param = dao_service.param
+    if not dao_service.param['error'] == '0':
+        return dao_service.param
 
-        param['user_id'] = self.get_uuid()
+    sql = sqlMapper.check_sys_users_password
+    temp = dao_service.select(sql=sql, param=dao_service.param)
 
-        sql = sqlMapper.insert_sys_user
-        self.insert(sql=sql, param=param)
+    if not len(temp) == 1:
+        dao_service.param['error'] = '用户名或密码错误!!!'
+        return dao_service.param
+    dao_service.param['user_id'] = temp[0][0]
+    '''记录到登录日志中去'''
+    dao_service.param['login_id'] = dao_service.get_uuid()
 
-        self.commit_or_rollback()
+    sql = sqlMapper.insert_user_login_log
+    a = dao_service.insert(sql=sql, param=dao_service.param)
 
+    dao_service.commit_or_rollback()
+
+    param = dao_service.return_param()
+
+    return jsonify(param)
+
+
+@pfus.route('/pfus0002', methods=['GET'])
+def pfus0002():
+    request.service_id = 'pfus0002'
+    dao_service = BaseService(request)
+    '''新增用户'''
+    # 获取初始化的参数
+    # param = dao_service.param
+    if not dao_service.param['error'] == '0':
+        return dao_service.param
+    '''用户登录'''
+
+    '''验证用户名和密码'''
+    sql = sqlMapper.check_sys_user_phone_exist
+    temp = dao_service.select(sql=sql, param=dao_service.param)
+    if temp[0][0] == 1:
+        dao_service.param['error'] = '手机号码不能重复!!'
+        return dao_service.param
+
+    dao_service.param['user_id'] = dao_service.get_uuid()
+
+    sql = sqlMapper.insert_sys_user
+    dao_service.insert(sql=sql, param=dao_service.param)
+
+    dao_service.commit_or_rollback()
+    param = dao_service.return_param()
+    return jsonify(param)

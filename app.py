@@ -1,10 +1,14 @@
 from flask import Flask, request, render_template, jsonify
-from dataPlatform.dataPlatFormRoute import pf_blue
+from dataPlatform.SystemUser import pfus
+from dataPlatform.ServiceManage import  pfsm
 from tools.FlasggerDoc import FlasggerDoc
 from flasgger import Swagger
 app = Flask(__name__)
+
+# 返回中文
 app.config['JSON_AS_ASCII'] = False
-app.register_blueprint(pf_blue)
+app.register_blueprint(pfus)
+app.register_blueprint(pfsm)
 
 
 @app.route('/')
@@ -26,8 +30,6 @@ def allow_origin(response):
 flasggerDoc = FlasggerDoc()
 flasggerDoc.init_flasgger_json_doc()
 swag = Swagger(app,template_file="tools\\flasggerDoc.json")
-# swagger_config = swag.DEFAULT_CONFIG
-
 
 if __name__ == "__main__":
     # 将host设置为0.0.0.0，则外网用户也可以访问到这个服务
