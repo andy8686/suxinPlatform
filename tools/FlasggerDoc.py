@@ -17,7 +17,8 @@ class FlasggerDoc(object):
             {"phone":["==11","int","用户登陆账号"] ,"password":[">6","str","用户密码"]}
             这里共有两个参数phone,password, 每个参数分别包含三个属性 以phone的为列 , 
             第一个:==11 代表传入的参数长度等于11 , 如果是 >10 也就是长度大于10 , 特别注意如果是==0 那就是不限制,
-            第二个:int 代表传入的参数类型 ,有 str,int, date(后面是格式化的样式例如:dateyyyymmdd=date('参数',yyyymmdd)) """,
+            第二个:int 代表传入的参数类型 ,有 str,int, date(后面是格式化的样式例如:dateyyyymmdd=date('参数',yyyymmdd)) 
+            第三个: 参数说名""",
             "title": "接口调用说明",
             "termsOfService": "http://www.suxin.thce",
             "contact": {
