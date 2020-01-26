@@ -1,4 +1,4 @@
-# ================mysql 版SQL语法
+
 # ============================系统用户模块
 '''验证用户名和密码'''
 check_sys_users_password = '''select a.id from sys_users a where a.phone = :phone and a.password = :password'''
@@ -11,10 +11,10 @@ check_sys_user_phone_exist = '''select count(1) from sys_users a where a.phone =
 
 '''新增系统用户'''
 insert_sys_user = '''insert into sys_users(id, name, birthday, sex, phone, email, account, password ) 
-              values( :user_id, :name, str_to_date(:birthday,'%Y%m%d'), :sex, :phone, :email, :account, :password )'''
+              values( :user_id, :name, to_date(:birthday,'yyyy-mm-dd'), :sex, :phone, :email, :account, :password )'''
 
 '''验证用户login_id是否还在有效期'''
-check_loginid_period_time = '''select count(1) from login_log a where a.id = :login_id and a.create_date > now() - 0.5 and a.last_date > now() - 0.02'''
+check_loginid_period_time = '''select count(1) from login_log a where a.id = :login_id and a.create_date > sysdate - 0.5 and a.last_date > sysdate - 0.02'''
 
 # ============================平台的服务模块
 '''通过服务ID获取服务系统'''

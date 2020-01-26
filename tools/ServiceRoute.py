@@ -22,7 +22,7 @@ def pf_invoke(request):
         job = SystemUser(request)
         # 平台服务管理
     elif service_id[0:4] == 'pfsm':
-        job = ServiceManagement(request)
+        job = ServiceManage(request)
         # 平台模块&系统管理
     elif service_id[0:4] == 'pfso':
         job = SystemModule(request)

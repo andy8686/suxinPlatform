@@ -1,19 +1,24 @@
 from flask import Flask, request, render_template, jsonify
-from dataPlatform.SystemUser import pfus
-from dataPlatform.ServiceManage import  pfsm
+import tools.ServiceRoute as sroute
+# from dataPlatform.SystemUser import pfus
 from tools.FlasggerDoc import FlasggerDoc
 from flasgger import Swagger
 app = Flask(__name__)
 
 # 返回中文
 app.config['JSON_AS_ASCII'] = False
-app.register_blueprint(pfus)
-app.register_blueprint(pfsm)
-
+# app.register_blueprint(pfus)
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return jsonify({"错误的网址":"0"})
+
+@app.route('/<service_id>')
+def service(service_id):
+    request.service_id = service_id
+    # 调用路由处理服务
+    params = sroute.invoke(request)
+    return jsonify(params)
 
 @app.before_request
 def before_request_handle():
